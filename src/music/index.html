@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>音乐播放器</title>
+	<style type="text/css">
+		h2{
+			display: block;
+			width: 40px;
+			position: absolute;
+			left: 40px; top: 40px;
+			color: #aaa;
+			text-shadow:0px 2px 0px #fff;
+		}
+		.main{
+			width: 840px;
+			margin: 20px auto;
+			background-image: url('./icon_aubg.png');
+			border-radius: 10px;
+			height: 472px;
+			position: relative;
+		}
+		.main .pic {
+			width: 180px;
+			height: 180px;
+			border-radius: 90px;
+			margin: 0 auto;
+			overflow: hidden;
+			position: absolute;
+			top: 90px;
+			left: 50%;
+			margin-left:110px;
+			box-shadow: 0px 40px 60px #a0a0a0;
+			transition: all .2s;
+		}
+
+		.pic-center{
+			margin-left:-100px;
+		}
+
+		.main .pic img{
+			width: 90px;
+			height: 90px;
+			border-radius: 90px;
+			overflow: hidden;
+			border:45px solid #000;
+		}
+
+		.pic .point{
+			width: 20px;
+			height: 20px;
+			border-radius: 10px;
+			background-color: #fff;
+			position: absolute;
+			top: 90px;
+			left: 290px;
+			box-shadow: inset 0px 4px 6px #a0a0a0;
+			transition: all .2s;
+		}
+
+		.point-center{
+			left:90px;
+		}
+
+		.btn{
+			position: absolute;
+			bottom: 45px;
+			left: 150px;
+			font-size: 18px;
+			line-height:46px;
+			color: #999;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		#list{
+			bottom: 45px;
+			left: 100px;
+		}
+
+		.btn:hover{
+			color: #fdbe01;
+		}
+
+		.ratate{
+			position: absolute;
+			top: 70px;
+    		left: 680px;
+    		transform: rotate(-22deg);
+    		transform-origin: 52px 14px;
+    		transition: transform .5s;
+    		z-index: 20;
+		}
+
+		.ratate-center{
+			left: 480px;
+		}
+
+		.ratate:hover, .ratate.active{
+			transform: rotate(0deg);
+		}
+
+		.ratate img{
+			width: 66px;
+    		height: 123px;
+		}
+
+		.time{
+			position: absolute;
+			bottom: 45px;
+			left: 200px;
+			font-size: 18px;
+			line-height:46px;
+			color: #999;
+			font-weight: bold;
+		}
+
+		.endtime{
+			position: absolute;
+			bottom: 45px;
+			left: 660px;
+			font-size: 18px;
+			line-height:46px;
+			color: #999;
+			font-weight: bold;
+		}
+
+		.shengbo,.sb-qj,.sb-bj{
+		    position: absolute;
+		    width: 400px;
+		    height: 46px;
+		    bottom: 46px;
+		    left: 252px;
+		    z-index: 4;
+		}
+
+		.sb-bj{
+		    background-color: #999;
+		    z-index: 2;
+		}
+
+		.sb-qj{
+		    background-color: #fdbe01;
+		    width: 0;
+		    z-index: 3;
+		}
+	
+		.tiao {
+			height: 200px;
+		    width: 200px;
+		    position: absolute;
+		    top: 280px;
+    		left: 50%;
+    		margin-left: 198.3px;
+			/*display: flex;
+			align-items: center;
+			justify-content: space-around;*/
+		}
+
+		.tiao-center{
+			margin-left: -1.7px;
+		}
+
+		.wenlu{
+			position: absolute;
+			display: block;
+			height: 3px;
+			width: 3px;
+			background-color:#fdbe01;
+			border-radius: 3px;
+			overflow:hidden;
+			transform-origin: center -100px;
+			box-shadow:0px 0px 10px #888;
+		}
+
+		.list{
+			width: 300px;
+			height: 300px;
+			position: absolute;
+			top: 50px; left: 100px;
+			border-radius: 10px;
+			background-color: rgba(0,0,0,0.1);
+			box-shadow:0px 0px 10px #888;
+			overflow: hidden;
+			transform: scaleY(1);
+			transform-origin: center bottom; 
+			transition: all .2s;
+		}
+
+		.nolist{
+			transform: scaleY(0);
+			top:70px;
+		}
+
+		.list h1{
+			font-size: 16px;
+			line-height: 3; color: #fff; padding-left: 20px;
+			box-shadow:inset 0px 0px 4px #888;
+		}
+
+		#lists{
+			height: 240px;
+			line-height: 20px;
+			overflow-y: auto;
+			overflow-x: hidden;  
+		}
+
+		#lists p{
+			color:#bbb;
+			line-height: 2.5;
+			background-color: rgba(0,0,0,0.2);
+			box-shadow:0px 3px 3px #888;
+			padding-left: 20px;
+			transition: all .2s;
+		}
+
+		#lists p:hover{
+			color:#eee;
+			background-color: rgba(0,0,0,0.1);
+			box-shadow:0px 0px 6px #555;
+			padding-left: 25px;
+		}
+		
+		/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/ 
+		::-webkit-scrollbar 
+		{ 
+		    width: 4px; 
+		    height: 6px; 
+		    background:none; 
+		} 
+		   
+		/*定义滚动条轨道 内阴影+圆角*/ 
+		::-webkit-scrollbar-track 
+		{ 
+		    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+		    border-radius: 3px; 
+		    background-color: #F5F5F5; 
+		} 
+		   
+		/*定义滑块 内阴影+圆角*/ 
+		::-webkit-scrollbar-thumb 
+		{ 
+		    border-radius: 3px; 
+		    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3); 
+		    background-color: #555; 
+		} 
+
+	</style>
+</head>
+<body>
+	<div class="main">
+		<h2>音乐播放器</h2>
+		<div class="pic">
+			<img id="pic" src="pic.jpg">
+			<div class="point"></div>
+		</div>
+		<div class="ratate" id="ratate">
+			<img src="icon-rotate.png">
+		</div>
+		<div class="btn" id="play">播放</div><div class="btn" id="list">列表</div>
+		<div class="list" id="listbg">
+			<h1>歌曲列表</h1>
+			<div id="lists">
+			</div>
+		</div>
+		<span class="time" id="time">0:00</span>
+		<span class="endtime" id="endtime">0:00</span>
+		<div class="shengbo" id="shengbo">
+			<img src="max-shengbo.png" draggable="false">
+		</div>
+		<div class="sb-qj" id="qj"></div>
+		<div class="sb-bj"></div>
+		<div class="tiao" id="tiao"></div>
+	</div>
+	<audio id="myAudio" crossOrigin="anonymous"></audio>
+</body>
+<script type="text/javascript">
+const bd = document.body
+let angle = 0;
+let pic = $('pic')
+let qj = $('qj')
+let time = $('time')
+let ratate = $('ratate')
+let shengbo = $('shengbo')
+let play = $('play')
+let isPlay = false;
+let isList = true;
+
+let songList = [
+	{
+		url:'m.mp3',
+		name:'站内轻音乐',
+		img:'pic.jpg'
+	},
+	{
+		url:'https://m10.music.126.net/20190131154818/97635ce911702b5c21d4e1a424e7b8e1/ymusic/520b/0409/0659/ea3025ef5d3c260a0e8813c44161237a.mp3',
+		name:'只要平凡',
+		img:'https://p1.music.126.net/6Tnjgaaz99P5ddRy4hTqqg==/18602637232533210.jpg?param=130y130'
+	},
+	{
+		img:'http://p1.music.126.net/vmCcDvD1H04e9gm97xsCqg==/109951163350929740.jpg?param=130y130',
+		name:'消愁',
+		url:'https://m10.music.126.net/20190131155004/cdee61b17e87825580ff87a224c2c65d/ymusic/8667/e098/1c44/52fae5790c731c41491bb252958e4ed7.mp3'
+	},
+	{
+		url:'https://m10.music.126.net/20190131140849/543b94023f72074c2e631f2aedc8a8b2/ymusic/7e53/14ba/2ddc/4b6f02f3891553fcb2a08d9f48c5bc52.mp3',
+		name:'Despacito (Remix)',
+		img:'http://p2.music.126.net/FQ1-Q_WcAVqrFf5GQSapbQ==/5837307232041041.jpg?param=130y130'
+	},
+	{
+		url:'https://m10.music.126.net/20190131144744/f876cb170287105e4c7d6ff718231ba7/ymusic/7f21/e2f4/e988/be5f057105825404ed1a5c1181a80d44.mp3',
+		name:'Exodus/Maksim Mrvica',
+		img:'http://p2.music.126.net/eNFhIgV8pF5zp5tRHSyyVg==/705886465073362.jpg?param=130y130'
+	},
+	{
+		url:'https://m10.music.126.net/20190131153730/b2c5ddc8b9c92dcee5b03ce22ddd5641/ymusic/67f9/c5b8/c683/68709eb172bb65403b98972874f58736.mp3',
+		name:'只道寻常',
+		img:'http://p2.music.126.net/Q5nMKc5AqIj9m9PsP18gLA==/109951162860912276.jpg?param=130y130'
+	}
+]
+
+document.getElementById('play').onclick = function(){
+	switchStatus()
+}
+
+ratate.onclick = function(){
+	switchStatus()
+}
+
+$('list').onclick = _=>{
+	isList = !isList
+	if(isList){
+		$('listbg').classList.remove('nolist')
+	}else{
+		$('listbg').classList.add('nolist')
+		$('pic').parentNode.classList.add('pic-center')
+	}
+}
+
+function switchStatus(){
+	isPlay = !isPlay
+	play.innerHTML = isPlay ? "暂停":"播放"
+	$('endtime').innerHTML = formatTime($("myAudio").duration)
+	if(isPlay){
+		if(!$("myAudio").src){
+			$("myAudio").src = songList[0].url
+			$("pic").src = songList[0].img
+		}
+		ratate.classList.add("active")
+		$("myAudio").play();
+	}else{
+		ratate.classList.remove("active")
+		$("myAudio").pause();
+	}
+}
+
+setInterval(function(){
+	if(isPlay){
+		pic.style.transform = "rotate(" + angle + "deg)"
+		angle = angle + 1
+		qj.style.width = ($("myAudio").currentTime/$("myAudio").duration*400) + "px"
+		time.innerHTML = formatTime($("myAudio").currentTime)
+		isPlay = !$("myAudio").ended
+	}
+},100)
+
+let handle = function(event){
+	qj.style.width = event.layerX + "px"
+	$("myAudio").currentTime = event.layerX / 400 * $("myAudio").duration
+	pic.style.transform = "rotate(" + $("myAudio").currentTime*10 + "deg)"
+}
+
+shengbo.onmousedown = function change(event){
+	qj.style.width = event.layerX + "px"
+	$("myAudio").currentTime = event.layerX / 400 * $("myAudio").duration
+	pic.style.transform = "rotate(" + $("myAudio").currentTime*10 + "deg)"
+	
+	shengbo.addEventListener('mousemove',handle)
+}
+
+shengbo.onmouseup = function(){
+	shengbo.removeEventListener('mousemove',handle)
+}
+
+
+function formatTime(val){
+	let m = parseInt(val/60) || 0
+	let s = parseInt(val%60) || 0
+	s = s < 10 ? '0'+s : s 
+	return m + ":" + s
+}
+
+function $(_id){
+	return document.getElementById(_id)
+}
+
+
+var context1;
+var analyserfa;
+var canvasFormAudio;
+var ctxfa;
+let nums = 64
+let array =  new Uint8Array(nums);
+let w = []
+
+window.addEventListener('load', function(e) {
+	context1 = new AudioContext()//建立音频环境
+
+	analyserfa = context1.createAnalyser()
+	var source1 = context1.createMediaElementSource($("myAudio"));
+	source1.connect(analyserfa)
+	analyserfa.connect(context1.destination)
+	
+	songList.map((v,index)=>{
+		let elP = document.createElement('p')
+		elP.innerHTML = v.name
+		elP.id = 'song_' + index
+		elP.onclick = _=>{
+			isPlay = false
+			$('myAudio').src = v.url
+			$('pic').src = v.img
+			switchStatus();
+		}
+		$('lists').appendChild(elP)
+	})
+
+
+	array.map((v,index)=>{
+		w[index] = document.createElement('span')
+		w[index].id = 'w_'+index
+		w[index].classList.add('wenlu')
+		$('tiao').appendChild(w[index])
+	});
+	
+	drawSpectrumfa()
+})
+
+function drawSpectrumfa(){
+	analyserfa.getByteFrequencyData(array)
+	array.map((v,index)=>{
+		$('w_'+index).style.height = v / 10 + 2 + 'px'
+		$('w_'+index).style.transform = "rotate(" + (index / nums * 360) + "deg)"
+	});
+	requestAnimationFrame(drawSpectrumfa);
+}
+
+</script>
+</html>
